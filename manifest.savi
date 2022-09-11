@@ -20,3 +20,15 @@
   :transitive dependency Timer v0
     :from "github:savi-lang/Timer"
     :depends on Time
+
+:manifest bin "bench"
+  :copies JSON
+  :sources "bench/*.savi"
+
+  :dependency Benchmark v0
+    :from "github:savi-lang/Benchmark"
+    :depends on Time
+
+  :transitive dependency Time v0
+    :from "github:savi-lang/Time"
+

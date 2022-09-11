@@ -1,0 +1,36 @@
+:class JSON.Parser.Bench.Parse
+  :is Benchmark
+
+  :const measures: "parse! through an array of 100 JSON objects"
+
+  :let _json String
+  :let _parser JSON.Parser
+
+  :new
+    @_json = @example_json(100)
+    @_parser = JSON.Parser.new
+
+  :fun ref run! None
+    token_count = 0
+    try (
+      @_parser.parse!(@_json) -> (token |
+        token_count = token_count + 1
+      )
+    )
+    None
+
+  :fun non example_json(n USize) String'iso
+    obj = <<<
+      { "name": "Alice", "admin": true }
+    >>>
+
+    json = String.new_iso(USize[2] + (obj.size + 1) * n)
+
+    json << "["
+    n.times -> (i |
+      if (i > 0) (json << ",")
+      json << obj
+    )
+    json << "]"
+    --json
+
