@@ -4,16 +4,16 @@
 
   :it "parses keywords"
     assert: @example("null", <<<
-      [JSON.TokenNull, 0, 4, 0, 0.0, ""]
+      [JSON.Token.Null, 0, 4, 0, 0.0, ""]
     >>>)
     assert: @example("true", <<<
-      [JSON.TokenTrue, 0, 4, 0, 0.0, ""]
+      [JSON.Token.True, 0, 4, 0, 0.0, ""]
     >>>)
     assert: @example("false", <<<
-      [JSON.TokenFalse, 0, 5, 0, 0.0, ""]
+      [JSON.Token.False, 0, 5, 0, 0.0, ""]
     >>>)
     assert: @example(" \t\nnull\n\t ", <<<
-      [JSON.TokenNull, 3, 7, 0, 0.0, ""]
+      [JSON.Token.Null, 3, 7, 0, 0.0, ""]
     >>>)
 
     assert: @example_error("nugget",    "nu")
@@ -23,36 +23,36 @@
 
   :it "parses numbers"
     assert: @example("123", <<<
-      [JSON.TokenNumberPre, 0, 0, 0, 0.0, ""]
-      [JSON.TokenNumber, 0, 3, 123, 0.0, ""]
+      [JSON.Token.NumberPre, 0, 0, 0, 0.0, ""]
+      [JSON.Token.Number, 0, 3, 123, 0.0, ""]
     >>>)
     assert: @example("-123", <<<
-      [JSON.TokenNumberPre, 0, 0, 0, 0.0, ""]
-      [JSON.TokenNumber, 0, 4, -123, 0.0, ""]
+      [JSON.Token.NumberPre, 0, 0, 0, 0.0, ""]
+      [JSON.Token.Number, 0, 4, -123, 0.0, ""]
     >>>)
     assert: @example("123.456", <<<
-      [JSON.TokenNumberPre, 0, 0, 0, 0.0, ""]
-      [JSON.TokenNumber, 0, 7, 0, 123.456, ""]
+      [JSON.Token.NumberPre, 0, 0, 0, 0.0, ""]
+      [JSON.Token.Number, 0, 7, 0, 123.456, ""]
     >>>)
     assert: @example("-123.456", <<<
-      [JSON.TokenNumberPre, 0, 0, 0, 0.0, ""]
-      [JSON.TokenNumber, 0, 8, 0, -123.456, ""]
+      [JSON.Token.NumberPre, 0, 0, 0, 0.0, ""]
+      [JSON.Token.Number, 0, 8, 0, -123.456, ""]
     >>>)
     assert: @example("123e2", <<<
-      [JSON.TokenNumberPre, 0, 0, 0, 0.0, ""]
-      [JSON.TokenNumber, 0, 5, 0, 12300, ""]
+      [JSON.Token.NumberPre, 0, 0, 0, 0.0, ""]
+      [JSON.Token.Number, 0, 5, 0, 12300, ""]
     >>>)
     assert: @example("-123e-2", <<<
-      [JSON.TokenNumberPre, 0, 0, 0, 0.0, ""]
-      [JSON.TokenNumber, 0, 7, 0, -1.23, ""]
+      [JSON.Token.NumberPre, 0, 0, 0, 0.0, ""]
+      [JSON.Token.Number, 0, 7, 0, -1.23, ""]
     >>>)
     assert: @example("-123.456e2", <<<
-      [JSON.TokenNumberPre, 0, 0, 0, 0.0, ""]
-      [JSON.TokenNumber, 0, 10, 0, -12345.6, ""]
+      [JSON.Token.NumberPre, 0, 0, 0, 0.0, ""]
+      [JSON.Token.Number, 0, 10, 0, -12345.6, ""]
     >>>)
     assert: @example("-123.4e-2", <<<
-      [JSON.TokenNumberPre, 0, 0, 0, 0.0, ""]
-      [JSON.TokenNumber, 0, 9, 0, -1.234, ""]
+      [JSON.Token.NumberPre, 0, 0, 0, 0.0, ""]
+      [JSON.Token.Number, 0, 9, 0, -1.234, ""]
     >>>)
 
     assert: @example_error("---",             "-")
@@ -69,16 +69,16 @@
 
   :it "parses strings"
     assert: @example(<<<"apple">>>, <<<
-      [JSON.TokenStringPre, 1, 1, 0, 0.0, ""]
-      [JSON.TokenString, 1, 6, 0, 0.0, "apple"]
+      [JSON.Token.StringPre, 1, 1, 0, 0.0, ""]
+      [JSON.Token.String, 1, 6, 0, 0.0, "apple"]
     >>>)
     assert: @example("                    \"apple\"   ", <<<
-      [JSON.TokenStringPre, 21, 21, 0, 0.0, ""]
-      [JSON.TokenString, 21, 26, 0, 0.0, "apple"]
+      [JSON.Token.StringPre, 21, 21, 0, 0.0, ""]
+      [JSON.Token.String, 21, 26, 0, 0.0, "apple"]
     >>>)
     assert: @example("                    \"\"   ", <<<
-      [JSON.TokenStringPre, 21, 21, 0, 0.0, ""]
-      [JSON.TokenString, 21, 21, 0, 0.0, ""]
+      [JSON.Token.StringPre, 21, 21, 0, 0.0, ""]
+      [JSON.Token.String, 21, 21, 0, 0.0, ""]
     >>>)
 
     assert: @example_error(" \" ",                       " \" ")
@@ -92,41 +92,41 @@
 
   :it "parses arrays"
     assert: @example("[]", <<<
-      [JSON.TokenArrayStart, 0, 1, 0, 0.0, ""]
-      [JSON.TokenArrayEnd, 1, 2, 0, 0.0, ""]
+      [JSON.Token.ArrayStart, 0, 1, 0, 0.0, ""]
+      [JSON.Token.ArrayEnd, 1, 2, 0, 0.0, ""]
     >>>)
     assert: @example("  [  ]  ", <<<
-      [JSON.TokenArrayStart, 2, 3, 0, 0.0, ""]
-      [JSON.TokenArrayEnd, 5, 6, 0, 0.0, ""]
+      [JSON.Token.ArrayStart, 2, 3, 0, 0.0, ""]
+      [JSON.Token.ArrayEnd, 5, 6, 0, 0.0, ""]
     >>>)
     assert: @example("[1,2,3]", <<<
-      [JSON.TokenArrayStart, 0, 1, 0, 0.0, ""]
-      [JSON.TokenNumberPre, 1, 1, 0, 0.0, ""]
-      [JSON.TokenNumber, 1, 2, 1, 0.0, ""]
-      [JSON.TokenNumberPre, 3, 3, 1, 0.0, ""]
-      [JSON.TokenNumber, 3, 4, 2, 0.0, ""]
-      [JSON.TokenNumberPre, 5, 5, 2, 0.0, ""]
-      [JSON.TokenNumber, 5, 6, 3, 0.0, ""]
-      [JSON.TokenArrayEnd, 6, 7, 3, 0.0, ""]
+      [JSON.Token.ArrayStart, 0, 1, 0, 0.0, ""]
+      [JSON.Token.NumberPre, 1, 1, 0, 0.0, ""]
+      [JSON.Token.Number, 1, 2, 1, 0.0, ""]
+      [JSON.Token.NumberPre, 3, 3, 1, 0.0, ""]
+      [JSON.Token.Number, 3, 4, 2, 0.0, ""]
+      [JSON.Token.NumberPre, 5, 5, 2, 0.0, ""]
+      [JSON.Token.Number, 5, 6, 3, 0.0, ""]
+      [JSON.Token.ArrayEnd, 6, 7, 3, 0.0, ""]
     >>>)
     assert: @example("  [  1  ,  2  ,  3  ]  ", <<<
-      [JSON.TokenArrayStart, 2, 3, 0, 0.0, ""]
-      [JSON.TokenNumberPre, 5, 5, 0, 0.0, ""]
-      [JSON.TokenNumber, 5, 6, 1, 0.0, ""]
-      [JSON.TokenNumberPre, 11, 11, 1, 0.0, ""]
-      [JSON.TokenNumber, 11, 12, 2, 0.0, ""]
-      [JSON.TokenNumberPre, 17, 17, 2, 0.0, ""]
-      [JSON.TokenNumber, 17, 18, 3, 0.0, ""]
-      [JSON.TokenArrayEnd, 20, 21, 3, 0.0, ""]
+      [JSON.Token.ArrayStart, 2, 3, 0, 0.0, ""]
+      [JSON.Token.NumberPre, 5, 5, 0, 0.0, ""]
+      [JSON.Token.Number, 5, 6, 1, 0.0, ""]
+      [JSON.Token.NumberPre, 11, 11, 1, 0.0, ""]
+      [JSON.Token.Number, 11, 12, 2, 0.0, ""]
+      [JSON.Token.NumberPre, 17, 17, 2, 0.0, ""]
+      [JSON.Token.Number, 17, 18, 3, 0.0, ""]
+      [JSON.Token.ArrayEnd, 20, 21, 3, 0.0, ""]
     >>>)
     assert: @example("[[[true]]]", <<<
-      [JSON.TokenArrayStart, 0, 1, 0, 0.0, ""]
-      [JSON.TokenArrayStart, 1, 2, 0, 0.0, ""]
-      [JSON.TokenArrayStart, 2, 3, 0, 0.0, ""]
-      [JSON.TokenTrue, 3, 7, 0, 0.0, ""]
-      [JSON.TokenArrayEnd, 7, 8, 0, 0.0, ""]
-      [JSON.TokenArrayEnd, 8, 9, 0, 0.0, ""]
-      [JSON.TokenArrayEnd, 9, 10, 0, 0.0, ""]
+      [JSON.Token.ArrayStart, 0, 1, 0, 0.0, ""]
+      [JSON.Token.ArrayStart, 1, 2, 0, 0.0, ""]
+      [JSON.Token.ArrayStart, 2, 3, 0, 0.0, ""]
+      [JSON.Token.True, 3, 7, 0, 0.0, ""]
+      [JSON.Token.ArrayEnd, 7, 8, 0, 0.0, ""]
+      [JSON.Token.ArrayEnd, 8, 9, 0, 0.0, ""]
+      [JSON.Token.ArrayEnd, 9, 10, 0, 0.0, ""]
     >>>)
 
     assert: @example_error("]]]",                   "")
@@ -137,69 +137,69 @@
 
   :it "parses objects"
     assert: @example("{}", <<<
-      [JSON.TokenObjectStart, 0, 1, 0, 0.0, ""]
-      [JSON.TokenObjectEnd, 1, 2, 0, 0.0, ""]
+      [JSON.Token.ObjectStart, 0, 1, 0, 0.0, ""]
+      [JSON.Token.ObjectEnd, 1, 2, 0, 0.0, ""]
     >>>)
     assert: @example("  {  }  ", <<<
-      [JSON.TokenObjectStart, 2, 3, 0, 0.0, ""]
-      [JSON.TokenObjectEnd, 5, 6, 0, 0.0, ""]
+      [JSON.Token.ObjectStart, 2, 3, 0, 0.0, ""]
+      [JSON.Token.ObjectEnd, 5, 6, 0, 0.0, ""]
     >>>)
     assert: @example(<<<{"fruit":"apple","edible":true}>>>, <<<
-      [JSON.TokenObjectStart, 0, 1, 0, 0.0, ""]
-      [JSON.TokenKeyPre, 2, 2, 0, 0.0, ""]
-      [JSON.TokenKey, 2, 7, 0, 0.0, "fruit"]
-      [JSON.TokenStringPre, 10, 10, 0, 0.0, "fruit"]
-      [JSON.TokenString, 10, 15, 0, 0.0, "apple"]
-      [JSON.TokenPairPost, 16, 16, 0, 0.0, "apple"]
-      [JSON.TokenKeyPre, 18, 18, 0, 0.0, "apple"]
-      [JSON.TokenKey, 18, 24, 0, 0.0, "edible"]
-      [JSON.TokenTrue, 26, 30, 0, 0.0, "edible"]
-      [JSON.TokenPairPost, 30, 30, 0, 0.0, "edible"]
-      [JSON.TokenObjectEnd, 30, 31, 0, 0.0, "edible"]
+      [JSON.Token.ObjectStart, 0, 1, 0, 0.0, ""]
+      [JSON.Token.KeyPre, 2, 2, 0, 0.0, ""]
+      [JSON.Token.Key, 2, 7, 0, 0.0, "fruit"]
+      [JSON.Token.StringPre, 10, 10, 0, 0.0, "fruit"]
+      [JSON.Token.String, 10, 15, 0, 0.0, "apple"]
+      [JSON.Token.PairPost, 16, 16, 0, 0.0, "apple"]
+      [JSON.Token.KeyPre, 18, 18, 0, 0.0, "apple"]
+      [JSON.Token.Key, 18, 24, 0, 0.0, "edible"]
+      [JSON.Token.True, 26, 30, 0, 0.0, "edible"]
+      [JSON.Token.PairPost, 30, 30, 0, 0.0, "edible"]
+      [JSON.Token.ObjectEnd, 30, 31, 0, 0.0, "edible"]
     >>>)
     assert: @example(<<<  {  "a"  :  1  ,  "b"  :  2  }  >>>, <<<
-      [JSON.TokenObjectStart, 2, 3, 0, 0.0, ""]
-      [JSON.TokenKeyPre, 6, 6, 0, 0.0, ""]
-      [JSON.TokenKey, 6, 7, 0, 0.0, "a"]
-      [JSON.TokenNumberPre, 13, 13, 0, 0.0, "a"]
-      [JSON.TokenNumber, 13, 14, 1, 0.0, "a"]
-      [JSON.TokenPairPost, 16, 16, 1, 0.0, "a"]
-      [JSON.TokenKeyPre, 20, 20, 1, 0.0, "a"]
-      [JSON.TokenKey, 20, 21, 1, 0.0, "b"]
-      [JSON.TokenNumberPre, 27, 27, 1, 0.0, "b"]
-      [JSON.TokenNumber, 27, 28, 2, 0.0, "b"]
-      [JSON.TokenPairPost, 30, 30, 2, 0.0, "b"]
-      [JSON.TokenObjectEnd, 30, 31, 2, 0.0, "b"]
+      [JSON.Token.ObjectStart, 2, 3, 0, 0.0, ""]
+      [JSON.Token.KeyPre, 6, 6, 0, 0.0, ""]
+      [JSON.Token.Key, 6, 7, 0, 0.0, "a"]
+      [JSON.Token.NumberPre, 13, 13, 0, 0.0, "a"]
+      [JSON.Token.Number, 13, 14, 1, 0.0, "a"]
+      [JSON.Token.PairPost, 16, 16, 1, 0.0, "a"]
+      [JSON.Token.KeyPre, 20, 20, 1, 0.0, "a"]
+      [JSON.Token.Key, 20, 21, 1, 0.0, "b"]
+      [JSON.Token.NumberPre, 27, 27, 1, 0.0, "b"]
+      [JSON.Token.Number, 27, 28, 2, 0.0, "b"]
+      [JSON.Token.PairPost, 30, 30, 2, 0.0, "b"]
+      [JSON.Token.ObjectEnd, 30, 31, 2, 0.0, "b"]
     >>>)
     assert: @example(<<<{"t":[{"e":[{"s":[{"t":[]}]}]}]}>>>, <<<
-      [JSON.TokenObjectStart, 0, 1, 0, 0.0, ""]
-      [JSON.TokenKeyPre, 2, 2, 0, 0.0, ""]
-      [JSON.TokenKey, 2, 3, 0, 0.0, "t"]
-      [JSON.TokenArrayStart, 5, 6, 0, 0.0, "t"]
-      [JSON.TokenObjectStart, 6, 7, 0, 0.0, "t"]
-      [JSON.TokenKeyPre, 8, 8, 0, 0.0, "t"]
-      [JSON.TokenKey, 8, 9, 0, 0.0, "e"]
-      [JSON.TokenArrayStart, 11, 12, 0, 0.0, "e"]
-      [JSON.TokenObjectStart, 12, 13, 0, 0.0, "e"]
-      [JSON.TokenKeyPre, 14, 14, 0, 0.0, "e"]
-      [JSON.TokenKey, 14, 15, 0, 0.0, "s"]
-      [JSON.TokenArrayStart, 17, 18, 0, 0.0, "s"]
-      [JSON.TokenObjectStart, 18, 19, 0, 0.0, "s"]
-      [JSON.TokenKeyPre, 20, 20, 0, 0.0, "s"]
-      [JSON.TokenKey, 20, 21, 0, 0.0, "t"]
-      [JSON.TokenArrayStart, 23, 24, 0, 0.0, "t"]
-      [JSON.TokenArrayEnd, 24, 25, 0, 0.0, "t"]
-      [JSON.TokenPairPost, 25, 25, 0, 0.0, "t"]
-      [JSON.TokenObjectEnd, 25, 26, 0, 0.0, "t"]
-      [JSON.TokenArrayEnd, 26, 27, 0, 0.0, "t"]
-      [JSON.TokenPairPost, 27, 27, 0, 0.0, "t"]
-      [JSON.TokenObjectEnd, 27, 28, 0, 0.0, "t"]
-      [JSON.TokenArrayEnd, 28, 29, 0, 0.0, "t"]
-      [JSON.TokenPairPost, 29, 29, 0, 0.0, "t"]
-      [JSON.TokenObjectEnd, 29, 30, 0, 0.0, "t"]
-      [JSON.TokenArrayEnd, 30, 31, 0, 0.0, "t"]
-      [JSON.TokenPairPost, 31, 31, 0, 0.0, "t"]
-      [JSON.TokenObjectEnd, 31, 32, 0, 0.0, "t"]
+      [JSON.Token.ObjectStart, 0, 1, 0, 0.0, ""]
+      [JSON.Token.KeyPre, 2, 2, 0, 0.0, ""]
+      [JSON.Token.Key, 2, 3, 0, 0.0, "t"]
+      [JSON.Token.ArrayStart, 5, 6, 0, 0.0, "t"]
+      [JSON.Token.ObjectStart, 6, 7, 0, 0.0, "t"]
+      [JSON.Token.KeyPre, 8, 8, 0, 0.0, "t"]
+      [JSON.Token.Key, 8, 9, 0, 0.0, "e"]
+      [JSON.Token.ArrayStart, 11, 12, 0, 0.0, "e"]
+      [JSON.Token.ObjectStart, 12, 13, 0, 0.0, "e"]
+      [JSON.Token.KeyPre, 14, 14, 0, 0.0, "e"]
+      [JSON.Token.Key, 14, 15, 0, 0.0, "s"]
+      [JSON.Token.ArrayStart, 17, 18, 0, 0.0, "s"]
+      [JSON.Token.ObjectStart, 18, 19, 0, 0.0, "s"]
+      [JSON.Token.KeyPre, 20, 20, 0, 0.0, "s"]
+      [JSON.Token.Key, 20, 21, 0, 0.0, "t"]
+      [JSON.Token.ArrayStart, 23, 24, 0, 0.0, "t"]
+      [JSON.Token.ArrayEnd, 24, 25, 0, 0.0, "t"]
+      [JSON.Token.PairPost, 25, 25, 0, 0.0, "t"]
+      [JSON.Token.ObjectEnd, 25, 26, 0, 0.0, "t"]
+      [JSON.Token.ArrayEnd, 26, 27, 0, 0.0, "t"]
+      [JSON.Token.PairPost, 27, 27, 0, 0.0, "t"]
+      [JSON.Token.ObjectEnd, 27, 28, 0, 0.0, "t"]
+      [JSON.Token.ArrayEnd, 28, 29, 0, 0.0, "t"]
+      [JSON.Token.PairPost, 29, 29, 0, 0.0, "t"]
+      [JSON.Token.ObjectEnd, 29, 30, 0, 0.0, "t"]
+      [JSON.Token.ArrayEnd, 30, 31, 0, 0.0, "t"]
+      [JSON.Token.PairPost, 31, 31, 0, 0.0, "t"]
+      [JSON.Token.ObjectEnd, 31, 32, 0, 0.0, "t"]
     >>>)
 
     assert: @example_error("}}}",                    "")

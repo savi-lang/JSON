@@ -1,31 +1,15 @@
-:alias JSON.Token
-  (JSON.TokenNull
-  | JSON.TokenTrue
-  | JSON.TokenFalse
-  | JSON.TokenNumberPre
-  | JSON.TokenNumber
-  | JSON.TokenStringPre
-  | JSON.TokenString
-  | JSON.TokenKeyPre
-  | JSON.TokenKey
-  | JSON.TokenPairPost
-  | JSON.TokenObjectStart
-  | JSON.TokenObjectEnd
-  | JSON.TokenArrayStart
-  | JSON.TokenArrayEnd
-  )
-
-:module JSON.TokenNull
-:module JSON.TokenTrue
-:module JSON.TokenFalse
-:module JSON.TokenNumberPre
-:module JSON.TokenNumber
-:module JSON.TokenStringPre
-:module JSON.TokenString
-:module JSON.TokenKeyPre
-:module JSON.TokenKey
-:module JSON.TokenPairPost
-:module JSON.TokenObjectStart
-:module JSON.TokenObjectEnd
-:module JSON.TokenArrayStart
-:module JSON.TokenArrayEnd
+:enum JSON.Token
+  :member Null         0
+  :member True         1
+  :member False        2
+  :member NumberPre    3
+  :member Number       4
+  :member StringPre    5
+  :member String       6
+  :member KeyPre       7
+  :member Key          8
+  :member PairPost     9
+  :member ObjectStart 10
+  :member ObjectEnd   11
+  :member ArrayStart  12
+  :member ArrayEnd    13
