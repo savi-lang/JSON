@@ -40,7 +40,7 @@
     >>>)
     assert: @example("123e2", <<<
       [JSON.Token.NumberPre, 0, 0, 0, 0.0, ""]
-      [JSON.Token.Number, 0, 5, 0, 12300, ""]
+      [JSON.Token.Number, 0, 5, 0, 12300.0, ""]
     >>>)
     assert: @example("-123e-2", <<<
       [JSON.Token.NumberPre, 0, 0, 0, 0.0, ""]
