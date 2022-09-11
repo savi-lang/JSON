@@ -72,9 +72,9 @@
     @_pre_token
     peeked = @_peek!
     case (
-    | peeked == 'n' | @_advance, @_eat!('u'), @_eat!('l'), @_eat!('l'),              yield JSON.TokenNull
-    | peeked == 't' | @_advance, @_eat!('r'), @_eat!('u'), @_eat!('e'),              yield JSON.TokenTrue
-    | peeked == 'f' | @_advance, @_eat!('a'), @_eat!('l'), @_eat!('s'), @_eat!('e'), yield JSON.TokenFalse
+    | peeked == 'n' | @_advance, @_eat!('u'), @_eat!('l'), @_eat!('l'),              yield JSON.Token.Null
+    | peeked == 't' | @_advance, @_eat!('r'), @_eat!('u'), @_eat!('e'),              yield JSON.Token.True
+    | peeked == 'f' | @_advance, @_eat!('a'), @_eat!('l'), @_eat!('s'), @_eat!('e'), yield JSON.Token.False
     | peeked == '"' | @_parse_string! -> (token | yield token)
     | peeked == '{' | @_parse_object! -> (token | yield token)
     | peeked == '[' | @_parse_array! -> (token | yield token)
@@ -99,7 +99,7 @@
   :fun ref _parse_array!
     :yields JSON.Token for None
     @_advance // past the opening bracket
-    yield JSON.TokenArrayStart
+    yield JSON.Token.ArrayStart
     @_skip_whitespace
 
     if (@_peek! == ']') (
@@ -118,7 +118,7 @@
         )
       )
     )
-    yield JSON.TokenArrayEnd
+    yield JSON.Token.ArrayEnd
 
   :fun ref _read_each_in_array! // exposed in the Reader class
     :yields USize for None
@@ -152,7 +152,7 @@
   :fun ref _parse_object!
     :yields JSON.Token for None
     @_advance // past the opening bracket
-    yield JSON.TokenObjectStart
+    yield JSON.Token.ObjectStart
     @_skip_whitespace
     if (@_peek! == '}') (
       @_pre_token
@@ -167,7 +167,7 @@
         @_eat!(':')
         @_parse_data! -> (token | yield token)
         @_skip_whitespace
-        @_pre_token, yield JSON.TokenPairPost
+        @_pre_token, yield JSON.Token.PairPost
         case @_next! == (
         | ',' | @_skip_whitespace
         | '}' | keep_going = False
@@ -176,7 +176,7 @@
       )
     )
 
-    yield JSON.TokenObjectEnd
+    yield JSON.Token.ObjectEnd
 
   :fun ref _read_each_in_object! // exposed in the Reader class
     :yields String for None
@@ -210,9 +210,9 @@
 
   :fun ref _parse_number!
     :yields JSON.Token for None
-    yield JSON.TokenNumberPre
+    yield JSON.Token.NumberPre
     @last_number = @_read_number!
-    yield JSON.TokenNumber
+    yield JSON.Token.Number
 
   :fun ref _read_number! (I64 | F64)
     sign I64 = if (@_peek_softly == '-') (@_advance, -1 | 1)
@@ -268,7 +268,7 @@
     :yields JSON.Token for None
     @_advance // past the opening quote
     @_pre_token
-    yield (if is_key (JSON.TokenKeyPre | JSON.TokenStringPre))
+    yield (if is_key (JSON.Token.KeyPre | JSON.Token.StringPre))
 
     buf = String.new // TODO: don't allocate here - let the caller construct the string from escape tokens if/when they choose
     keep_going = True
@@ -283,7 +283,7 @@
     @last_string = buf.clone // TODO: skip clone here by skipping allocating in the first place - see above TODO comment
 
     @_rewind
-    yield (if is_key (JSON.TokenKey | JSON.TokenString))
+    yield (if is_key (JSON.Token.Key | JSON.Token.String))
     @_advance
 
   :fun ref _read_string! String // exposed in the Reader class
