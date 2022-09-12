@@ -1,0 +1,6 @@
+:actor Main
+  :new (env)
+    Benchmark.Process.run(env, [
+      Benchmark.Run(JSON.Parser.Bench.Parse).new(env)
+    ])
+
