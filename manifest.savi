@@ -21,9 +21,9 @@
     :from "github:savi-lang/Timer"
     :depends on Time
 
-:manifest bin "bench"
+:manifest bin "benchmark"
   :copies JSON
-  :sources "bench/*.savi"
+  :sources "benchmark/*.savi"
 
   :dependency Benchmark v0
     :from "github:savi-lang/Benchmark"
