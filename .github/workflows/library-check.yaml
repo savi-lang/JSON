@@ -47,8 +47,8 @@ jobs:
   # Add any custom jobs you need below this comment.
   # The area above this comment is reserved for future standard jobs.
 
-  # Run the `bench` binary for this library.
-  bench:
+  # Run the `benchmark` binary for this library.
+  benchmark:
     if: github.repository != 'savi-lang/base-standard-library' # skip base repo
     strategy:
       fail-fast: false
@@ -58,5 +58,5 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - uses: savi-lang/action-install@v1.0.0
-      - run: savi deps update --for bench
-      - run: savi run bench
+      - run: savi deps update --for benchmark
+      - run: savi run benchmark

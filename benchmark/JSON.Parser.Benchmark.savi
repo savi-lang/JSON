@@ -1,4 +1,4 @@
-:class JSON.Parser.Bench.Parse
+:class JSON.Parser.Benchmark.Parse
   :is Benchmark
 
   :const measures: "parse! through an array of 100 JSON objects"
