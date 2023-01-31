@@ -239,7 +239,7 @@
       @env.err.print(" but it parsed successfully")
       False
     |
-      actual = source.trim(0, parser.token_end.isize)
+      actual = source.trim(0, parser.token_end)
       if (valid_part == actual) (
         True
       |
@@ -258,14 +258,13 @@
     (JSON.Token | USize | USize | I64 | F64 | String | None)
   )): []
 
-  :fun inspect_into(out String'iso) String'iso
+  :fun inspect_into(out String'ref) None
     @tokens.each -> (item |
-      out = Inspect.into(--out, item)
+      Inspect.into(out, item)
       out.push_byte('\n')
       None // TODO: this None shouldn't be needed
     )
-    out.trim_in_place(0, -1) // remove the final newline
-    --out
+    out.trim_in_place(0, out.size - 1) // remove the final newline
 
   :fun ref collect(parser JSON.Parser, token JSON.Token) None
     @tokens << [

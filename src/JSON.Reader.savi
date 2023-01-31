@@ -58,14 +58,13 @@
   :let _list Array(JSON.ReaderError): []
 
   :fun is_empty: @_list.is_empty
-  :fun inspect_into(out String'iso) String'iso
+  :fun inspect_into(out String'ref) None
     @_list.each -> (error |
       out << "- "
-      out = error.inspect_into(--out)
+      error.inspect_into(out)
       out.push_byte('\n')
       None // TODO: this None should not be needed
     )
-    --out
 
   :fun ref start_scope(segment): @_path.push(segment)
   :fun ref finish_scope: @_path.pop
@@ -76,23 +75,23 @@
     @_list << JSON.ReaderErrorExpectedHere.new(@_path.clone, what)
 
 :trait JSON.ReaderError
-  :fun inspect_into(out String'iso) String'iso
+  :fun inspect_into(out String'ref) None
 
 :class JSON.ReaderErrorUnexpectedKeyHere
   :is JSON.ReaderError
   :let path JSON.Path'val
   :new (@path)
-  :fun inspect_into(out String'iso) String'iso
+  :fun inspect_into(out String'ref) None
     out << "unexpected key encountered at path: "
-    @path.inspect_into(--out)
+    @path.inspect_into(out)
 
 :class JSON.ReaderErrorExpectedHere
   :is JSON.ReaderError
   :let path JSON.Path'val
   :let what String
   :new (@path, @what)
-  :fun inspect_into(out String'iso) String'iso
+  :fun inspect_into(out String'ref) None
     out << "expected to read "
     out << @what
     out << " at path: "
-    @path.inspect_into(--out)
+    @path.inspect_into(out)

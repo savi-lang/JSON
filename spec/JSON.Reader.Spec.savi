@@ -53,7 +53,8 @@
       )
     )
 
-    assert: Inspect[read.errors].trim(0, -1) == <<<
+    errors_string = Inspect[read.errors]
+    assert: errors_string.trim(0, errors_string.size - 1) == <<<
       - unexpected key encountered at path: $[0]["bogus"]
       - expected to read a string value at path: $[1]["name"]
       - expected to read a boolean value at path: $[2]["admin"]
