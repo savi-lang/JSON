@@ -6,12 +6,11 @@
   :fun ref pop!: @segments.pop!
   :fun ref pop: try @pop!
   :fun ref clone iso: @new_iso(@segments.clone)
-  :fun inspect_into(out String'iso) String'iso
+  :fun inspect_into(out String'ref) None
     out.push_byte('$')
     @segments.each -> (segment |
       out.push_byte('[')
-      out = Inspect.into(--out, segment)
+      Inspect.into(out, segment)
       out.push_byte(']')
       None // TODO: this None should not be needed
     )
-    --out
