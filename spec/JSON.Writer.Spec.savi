@@ -1,0 +1,115 @@
+:class _WriterExampleClass
+  :var name String
+  :var admin (Bool | None)
+  :new (@name, admin (Bool | None) = None)
+    @admin = admin // TODO: remove this intermediate variable
+
+  :fun trace_data(trace TraceData.Observer) None
+    trace.object(identity_digest_of @) -> (
+      trace.property("name", @name)
+      try trace.property("admin", @admin.not!(None))
+    )
+
+:class JSON.Writer.Spec
+  :is Spec
+  :const describes: "JSON.Writer"
+
+  :it "writes JSON"
+    streams = ByteStream.Pair.new
+    write = JSON.Writer.new(streams.write)
+
+    write.array -> (write |
+      write.child -> (write |
+        write.object -> (write |
+          write.string("name", "Alice")
+          write.bool("admin", True)
+        )
+      )
+      write.child -> (write |
+        write.object -> (write |
+          write.string("name", "Bob")
+        )
+      )
+      write.child -> (write |
+        write.object -> (write |
+          write.string("name", "Cyril")
+          write.bool("admin", False)
+        )
+      )
+    )
+
+    assert no_error: streams.write.flush!
+    assert: streams.read.extract_all.as_string ==
+      "[\(
+      ){\"name\":\"Alice\",\"admin\":true},\(
+      ){\"name\":\"Bob\"},\(
+      ){\"name\":\"Cyril\",\"admin\":false}\(
+      )]"
+
+  :it "writes pretty JSON"
+    streams = ByteStream.Pair.new
+    write = JSON.Writer.new_pretty(streams.write)
+
+    write.array -> (write |
+      write.child -> (write |
+        write.object -> (write |
+          write.string("name", "Alice")
+          write.bool("admin", True)
+        )
+      )
+      write.child -> (write |
+        write.object -> (write |
+          write.string("name", "Bob")
+        )
+      )
+      write.child -> (write |
+        write.object -> (write |
+          write.string("name", "Cyril")
+          write.bool("admin", False)
+        )
+      )
+    )
+
+    assert no_error: streams.write.flush!
+    assert: streams.read.extract_all.as_string == <<<
+      [
+        {
+          "name": "Alice",
+          "admin": true
+        },
+        {
+          "name": "Bob"
+        },
+        {
+          "name": "Cyril",
+          "admin": false
+        }
+      ]
+    >>>
+
+  :it "writes pretty JSON from traced data"
+    streams = ByteStream.Pair.new
+    write = JSON.Writer.new_pretty(streams.write)
+
+    alice = _WriterExampleClass.new("Alice", True)
+    bob   = _WriterExampleClass.new("Bob")
+    cyril = _WriterExampleClass.new("Cyril", False)
+
+    write.trace([alice, bob, cyril])
+
+    assert no_error: streams.write.flush!
+    assert: streams.read.extract_all.as_string == <<<
+      [
+        {
+          "name": "Alice",
+          "admin": true
+        },
+        {
+          "name": "Bob"
+        },
+        {
+          "name": "Cyril",
+          "admin": false
+        }
+      ]
+    >>>

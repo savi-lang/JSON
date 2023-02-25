@@ -3,4 +3,5 @@
     Spec.Process.run(env, [
       Spec.Run(JSON.Parser.Spec).new(env)
       Spec.Run(JSON.Reader.Spec).new(env)
+      Spec.Run(JSON.Writer.Spec).new(env)
     ])
