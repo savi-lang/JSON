@@ -21,9 +21,19 @@
   :fun ref trace(child TraceData)
     child.trace_data(@_write)
 
+  :fun ref null:          @_write.primitive_none
+  :fun ref bool(value):   @_write.primitive_bool(value)
+  :fun ref u8(value):     @_write.primitive_u8(value)
+  :fun ref u16(value):    @_write.primitive_u16(value)
+  :fun ref u32(value):    @_write.primitive_u32(value)
+  :fun ref u64(value):    @_write.primitive_u64(value)
+  :fun ref i8(value):     @_write.primitive_i8(value)
+  :fun ref i16(value):    @_write.primitive_i16(value)
+  :fun ref i32(value):    @_write.primitive_i32(value)
+  :fun ref i64(value):    @_write.primitive_i64(value)
+  :fun ref f32(value):    @_write.primitive_f32(value)
+  :fun ref f64(value):    @_write.primitive_f64(value)
   :fun ref string(value): @_write.primitive_string(value)
-
-  :fun ref bool(value): @_write.primitive_bool(value)
 
 :struct JSON.Writer.InObject
   :let _write _Writer
@@ -39,15 +49,19 @@
     @_write._key(key)
     child.trace_data(@_write)
 
-  :fun ref string(key, value)
-    @_write._pre_item
-    @_write._key(key)
-    @_write.primitive_string(value)
-
-  :fun ref bool(key, value)
-    @_write._pre_item
-    @_write._key(key)
-    @_write.primitive_bool(value)
+  :fun ref null(key):          @_write._pre_item, @_write._key(key), @_write.primitive_none
+  :fun ref bool(key, value):   @_write._pre_item, @_write._key(key), @_write.primitive_bool(value)
+  :fun ref u8(key, value):     @_write._pre_item, @_write._key(key), @_write.primitive_u8(value)
+  :fun ref u16(key, value):    @_write._pre_item, @_write._key(key), @_write.primitive_u16(value)
+  :fun ref u32(key, value):    @_write._pre_item, @_write._key(key), @_write.primitive_u32(value)
+  :fun ref u64(key, value):    @_write._pre_item, @_write._key(key), @_write.primitive_u64(value)
+  :fun ref i8(key, value):     @_write._pre_item, @_write._key(key), @_write.primitive_i8(value)
+  :fun ref i16(key, value):    @_write._pre_item, @_write._key(key), @_write.primitive_i16(value)
+  :fun ref i32(key, value):    @_write._pre_item, @_write._key(key), @_write.primitive_i32(value)
+  :fun ref i64(key, value):    @_write._pre_item, @_write._key(key), @_write.primitive_i64(value)
+  :fun ref f32(key, value):    @_write._pre_item, @_write._key(key), @_write.primitive_f32(value)
+  :fun ref f64(key, value):    @_write._pre_item, @_write._key(key), @_write.primitive_f64(value)
+  :fun ref string(key, value): @_write._pre_item, @_write._key(key), @_write.primitive_string(value)
 
 :struct JSON.Writer.InArray
   :let _write _Writer
@@ -61,13 +75,19 @@
     @_write._pre_item
     child.trace_data(@_write)
 
-  :fun ref string(value)
-    @_write._pre_item
-    @_write.primitive_string(value)
-
-  :fun ref bool(value)
-    @_write._pre_item
-    @_write.primitive_bool(value)
+  :fun ref null:          @_write._pre_item, @_write.primitive_none
+  :fun ref bool(value):   @_write._pre_item, @_write.primitive_bool(value)
+  :fun ref u8(value):     @_write._pre_item, @_write.primitive_u8(value)
+  :fun ref u16(value):    @_write._pre_item, @_write.primitive_u16(value)
+  :fun ref u32(value):    @_write._pre_item, @_write.primitive_u32(value)
+  :fun ref u64(value):    @_write._pre_item, @_write.primitive_u64(value)
+  :fun ref i8(value):     @_write._pre_item, @_write.primitive_i8(value)
+  :fun ref i16(value):    @_write._pre_item, @_write.primitive_i16(value)
+  :fun ref i32(value):    @_write._pre_item, @_write.primitive_i32(value)
+  :fun ref i64(value):    @_write._pre_item, @_write.primitive_i64(value)
+  :fun ref f32(value):    @_write._pre_item, @_write.primitive_f32(value)
+  :fun ref f64(value):    @_write._pre_item, @_write.primitive_f64(value)
+  :fun ref string(value): @_write._pre_item, @_write.primitive_string(value)
 
 :alias _Writer: JSON.Writer.TraceData.Observer
 

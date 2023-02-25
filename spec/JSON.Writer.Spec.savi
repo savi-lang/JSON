@@ -88,6 +88,105 @@
       ]
     >>>
 
+  :it "writes every JSON primitive data type"
+    streams = ByteStream.Pair.new
+    write = JSON.Writer.new(streams.write)
+
+    write.null,       streams.write.push('\n')
+    write.bool(True), streams.write.push('\n')
+    write.u8(8),      streams.write.push('\n')
+    write.u16(16),    streams.write.push('\n')
+    write.u32(32),    streams.write.push('\n')
+    write.u64(64),    streams.write.push('\n')
+    write.i8(-8),     streams.write.push('\n')
+    write.i16(-16),   streams.write.push('\n')
+    write.i32(-32),   streams.write.push('\n')
+    write.i64(-64),   streams.write.push('\n')
+    write.f32(32.5), streams.write.push('\n')
+    write.f64(64.5), streams.write.push('\n')
+    write.string("some string")
+
+    assert no_error: streams.write.flush!
+    assert: streams.read.extract_all.as_string == <<<
+      null
+      true
+      8
+      16
+      32
+      64
+      -8
+      -16
+      -32
+      -64
+      32.5
+      64.5
+      "some string"
+    >>>
+
+  :it "writes every JSON primitive data type in an array"
+    streams = ByteStream.Pair.new
+    write = JSON.Writer.new(streams.write)
+
+    write.array -> (write |
+      write.null
+      write.bool(True)
+      write.u8(8)
+      write.u16(16)
+      write.u32(32)
+      write.u64(64)
+      write.i8(-8)
+      write.i16(-16)
+      write.i32(-32)
+      write.i64(-64)
+      write.f32(32.5)
+      write.f64(64.5)
+      write.string("some string")
+    )
+
+    assert no_error: streams.write.flush!
+    assert: streams.read.extract_all.as_string == <<<
+      [null,true,8,16,32,64,-8,-16,-32,-64,32.5,64.5,"some string"]
+    >>>
+
+  :it "writes every JSON primitive data type in an object"
+    streams = ByteStream.Pair.new
+    write = JSON.Writer.new_pretty(streams.write)
+
+    write.object -> (write |
+      write.null("A")
+      write.bool("B", True)
+      write.u8("C", 8)
+      write.u16("D", 16)
+      write.u32("E", 32)
+      write.u64("F", 64)
+      write.i8("G", -8)
+      write.i16("H", -16)
+      write.i32("I", -32)
+      write.i64("J", -64)
+      write.f32("K", 32.5)
+      write.f64("L", 64.5)
+      write.string("M", "some string")
+    )
+
+    assert no_error: streams.write.flush!
+    assert: streams.read.extract_all.as_string == <<<
+      {
+        "A": null,
+        "B": true,
+        "C": 8,
+        "D": 16,
+        "E": 32,
+        "F": 64,
+        "G": -8,
+        "H": -16,
+        "I": -32,
+        "J": -64,
+        "K": 32.5,
+        "L": 64.5,
+        "M": "some string"
+      }
+    >>>
+
   :it "writes pretty JSON from traced data"
     streams = ByteStream.Pair.new
     write = JSON.Writer.new_pretty(streams.write)
