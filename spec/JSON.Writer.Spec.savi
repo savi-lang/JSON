@@ -39,12 +39,13 @@
     )
 
     assert no_error: streams.write.flush!
-    assert: streams.read.extract_all.as_string ==
-      "[\(
-      ){\"name\":\"Alice\",\"admin\":true},\(
-      ){\"name\":\"Bob\"},\(
-      ){\"name\":\"Cyril\",\"admin\":false}\(
-      )]"
+    assert: streams.read.extract_all.as_string == String.join([
+      <<<[>>>
+      <<<{"name":"Alice","admin":true},>>>
+      <<<{"name":"Bob"},>>>
+      <<<{"name":"Cyril","admin":false}>>>
+      <<<]>>>
+    ])
 
   :it "writes pretty JSON"
     streams = ByteStream.Pair.new
@@ -112,4 +113,48 @@
           "admin": false
         }
       ]
+    >>>
+
+  :it "writes every traceable primitive data type"
+    streams = ByteStream.Pair.new
+    trace = JSON.Writer.TraceData.Observer.new(streams.write)
+
+    trace.array(0) -> (
+      trace.array_element(None)
+      trace.array_element(True)
+      trace.array_element(U8[8])
+      trace.array_element(U16[16])
+      trace.array_element(U32[32])
+      trace.array_element(U64[64])
+      trace.array_element(I8[-8])
+      trace.array_element(I16[-16])
+      trace.array_element(I32[-32])
+      trace.array_element(I64[-64])
+      trace.array_element(F32[32.5])
+      trace.array_element(F64[64.5])
+      trace.array_element(b"some bytes")
+      trace.array_element("some string")
+    )
+
+    assert no_error: streams.write.flush!
+    assert: streams.read.extract_all.as_string == <<<
+      [null,true,8,16,32,64,-8,-16,-32,-64,32.5,64.5,"some bytes","some string"]
+    >>>
+
+  :it "writes NaN, Infinity, and -Infinity values as null"
+    streams = ByteStream.Pair.new
+    trace = JSON.Writer.TraceData.Observer.new(streams.write)
+
+    trace.array(0) -> (
+      trace.array_element(F32.nan)
+      trace.array_element(F32.infinity)
+      trace.array_element(F32.neg_infinity)
+      trace.array_element(F64.nan)
+      trace.array_element(F64.infinity)
+      trace.array_element(F64.neg_infinity)
+    )
+
+    assert no_error: streams.write.flush!
+    assert: streams.read.extract_all.as_string == <<<
+      [null,null,null,null,null,null]
     >>>

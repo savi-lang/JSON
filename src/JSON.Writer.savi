@@ -3,10 +3,10 @@
   :new _new(@_write)
 
   :new (stream)
-    @_write = _Writer._new(stream)
+    @_write = _Writer.new(stream)
 
   :new new_pretty(stream, indent = 2)
-    @_write = _Writer._new(stream)
+    @_write = _Writer.new(stream)
     @_write._should_newline = True
     @_write._indent_spaces = indent
 
@@ -80,7 +80,7 @@
   :var _should_newline: False
   :var _is_first_in_collection: False
 
-  :new _new(@_stream)
+  :new new(@_stream)
 
   :fun _should_indent_with_tab: @_indent_spaces == @_indent_spaces.max_value
 
@@ -157,19 +157,42 @@
   :fun ref primitive_bool(value Bool) None
     @_stream << if value (b"true" | b"false")
 
-  :fun ref primitive_u64(value U64) None: @primitive_none // TODO
-  :fun ref primitive_u32(value U32) None: @primitive_none // TODO
-  :fun ref primitive_u16(value U16) None: @primitive_none // TODO
-  :fun ref primitive_u8(value U8) None: @primitive_none // TODO
-  :fun ref primitive_i64(value I64) None: @primitive_none // TODO
-  :fun ref primitive_i32(value I32) None: @primitive_none // TODO
-  :fun ref primitive_i16(value I16) None: @primitive_none // TODO
-  :fun ref primitive_i8(value I8) None: @primitive_none // TODO
-  :fun ref primitive_f64(value F64) None: @primitive_none // TODO
-  :fun ref primitive_f32(value F32) None: @primitive_none // TODO
+  :fun ref primitive_u64(value U64) None
+    @_stream << "\(value)".as_bytes // TODO: more efficient
 
-  :fun ref primitive_name(value String'box) None: @primitive_string(value)
-  :fun ref primitive_bytes(value Bytes'box) None: @primitive_string(value.clone.as_string) // TODO: more efficient
+  :fun ref primitive_u32(value U32) None
+    @_stream << "\(value)".as_bytes // TODO: more efficient
+
+  :fun ref primitive_u16(value U16) None
+    @_stream << "\(value)".as_bytes // TODO: more efficient
+
+  :fun ref primitive_u8(value U8) None
+    @_stream << "\(value)".as_bytes // TODO: more efficient
+
+  :fun ref primitive_i64(value I64) None
+    @_stream << "\(value)".as_bytes // TODO: more efficient
+
+  :fun ref primitive_i32(value I32) None
+    @_stream << "\(value)".as_bytes // TODO: more efficient
+
+  :fun ref primitive_i16(value I16) None
+    @_stream << "\(value)".as_bytes // TODO: more efficient
+
+  :fun ref primitive_i8(value I8) None
+    @_stream << "\(value)".as_bytes // TODO: more efficient
+
+  :fun ref primitive_f64(value F64) None
+    @_stream << if value.is_finite ("\(value)".as_bytes | b"null") // TODO: more efficient
+
+  :fun ref primitive_f32(value F32) None
+    @_stream << if value.is_finite ("\(value)".as_bytes | b"null") // TODO: more efficient
+
+  :fun ref primitive_name(value String'box) None
+    @primitive_string(value)
+
+  :fun ref primitive_bytes(value Bytes'box) None
+    @primitive_string(value.clone.as_string) // TODO: more efficient
+
   :fun ref primitive_string(value String'box) None
     @_stream.push('"')
     value.each_char_with_index_and_width -> (char, index, width |
