@@ -1,0 +1,205 @@
+:struct JSON.Writer
+  :let _write _Writer
+  :new _new(@_write)
+
+  :new (stream)
+    @_write = _Writer.new(stream)
+
+  :new new_pretty(stream, indent = 2)
+    @_write = _Writer.new(stream)
+    @_write._should_newline = True
+    @_write._indent_spaces = indent
+
+  :fun ref object
+    :yields JSON.Writer.InObject for None // TODO: type checking to prevent yield interruption
+    @_write.object(0) -> (yield JSON.Writer.InObject._new(@_write))
+
+  :fun ref array
+    :yields JSON.Writer.InArray for None // TODO: type checking to prevent yield interruption
+    @_write.array(0) -> (yield JSON.Writer.InArray._new(@_write))
+
+  :fun ref trace(child TraceData)
+    child.trace_data(@_write)
+
+  :fun ref string(value): @_write.primitive_string(value)
+
+  :fun ref bool(value): @_write.primitive_bool(value)
+
+:struct JSON.Writer.InObject
+  :let _write _Writer
+  :new _new(@_write)
+
+  :fun ref child(key)
+    @_write._pre_item
+    @_write._key(key)
+    yield JSON.Writer._new(@_write)
+
+  :fun ref trace(key, child TraceData)
+    @_write._pre_item
+    @_write._key(key)
+    child.trace_data(@_write)
+
+  :fun ref string(key, value)
+    @_write._pre_item
+    @_write._key(key)
+    @_write.primitive_string(value)
+
+  :fun ref bool(key, value)
+    @_write._pre_item
+    @_write._key(key)
+    @_write.primitive_bool(value)
+
+:struct JSON.Writer.InArray
+  :let _write _Writer
+  :new _new(@_write)
+
+  :fun ref child
+    @_write._pre_item
+    yield JSON.Writer._new(@_write)
+
+  :fun ref trace(child TraceData)
+    @_write._pre_item
+    child.trace_data(@_write)
+
+  :fun ref string(value)
+    @_write._pre_item
+    @_write.primitive_string(value)
+
+  :fun ref bool(value)
+    @_write._pre_item
+    @_write.primitive_bool(value)
+
+:alias _Writer: JSON.Writer.TraceData.Observer
+
+:class JSON.Writer.TraceData.Observer
+  :is TraceData.Observer
+
+  :var _stream ByteStream.Writer
+  :var _current_depth USize: 0
+  :var _indent_spaces U8: 0
+  :var _should_newline: False
+  :var _is_first_in_collection: False
+
+  :new new(@_stream)
+
+  :fun _should_indent_with_tab: @_indent_spaces == @_indent_spaces.max_value
+
+  :fun ref _newline_and_indent None
+    @_stream.push('\n')
+
+    if @_should_indent_with_tab (
+      @_stream.push('\t')
+    |
+      (@_indent_spaces.usize * @_current_depth.usize).times -> (
+        @_stream.push(' ')
+      )
+    )
+
+  :fun ref _pre_item None
+    if !@_is_first_in_collection @_stream.push(',')
+    @_is_first_in_collection = False
+
+    if @_should_newline (
+      @_newline_and_indent
+    |
+      if @_indent_spaces.is_nonzero @_stream.push(' ')
+    )
+
+  :fun ref _finish_collection None
+    if (@_should_newline && !@_is_first_in_collection) @_newline_and_indent
+
+  :fun ref _key(name String)
+    @primitive_string(name)
+    @_stream.push(':')
+    if (@_should_newline || @_indent_spaces.is_nonzero) @_stream.push(' ')
+
+  :fun ref object(recurse_id USize) None
+    :yields None for None // TODO: add a "without interruption" enforcement to the yield signature to ensure that the yield block isn't allowed to jump away.
+    // TODO: should we handle the recurse_id in some way?
+
+    @_stream.push('{')
+    @_current_depth += 1
+    prior_is_first_in_collection = @_is_first_in_collection <<= True
+
+    yield None
+
+    @_is_first_in_collection = prior_is_first_in_collection
+    @_current_depth -= 1
+    @_finish_collection, @_stream.push('}')
+
+  :fun ref property(name String, value TraceData) None
+    @_pre_item
+    @_key(name)
+    value.trace_data(@)
+
+  :fun ref array(recurse_id USize) None
+    :yields None for None // TODO: add a "without interruption" enforcement to the yield signature to ensure that the yield block isn't allowed to jump away.
+    // TODO: should we handle the recurse_id in some way?
+
+    @_stream.push('[')
+    @_current_depth += 1
+    prior_is_first_in_collection = @_is_first_in_collection <<= True
+
+    yield None
+
+    @_is_first_in_collection = prior_is_first_in_collection
+    @_current_depth -= 1
+    @_finish_collection, @_stream.push(']')
+
+  :fun ref array_element(value TraceData) None
+    @_pre_item
+
+    value.trace_data(@)
+
+  :fun ref primitive_none None
+    @_stream << b"null"
+
+  :fun ref primitive_bool(value Bool) None
+    @_stream << if value (b"true" | b"false")
+
+  :fun ref primitive_u64(value U64) None
+    @_stream << "\(value)".as_bytes // TODO: more efficient
+
+  :fun ref primitive_u32(value U32) None
+    @_stream << "\(value)".as_bytes // TODO: more efficient
+
+  :fun ref primitive_u16(value U16) None
+    @_stream << "\(value)".as_bytes // TODO: more efficient
+
+  :fun ref primitive_u8(value U8) None
+    @_stream << "\(value)".as_bytes // TODO: more efficient
+
+  :fun ref primitive_i64(value I64) None
+    @_stream << "\(value)".as_bytes // TODO: more efficient
+
+  :fun ref primitive_i32(value I32) None
+    @_stream << "\(value)".as_bytes // TODO: more efficient
+
+  :fun ref primitive_i16(value I16) None
+    @_stream << "\(value)".as_bytes // TODO: more efficient
+
+  :fun ref primitive_i8(value I8) None
+    @_stream << "\(value)".as_bytes // TODO: more efficient
+
+  :fun ref primitive_f64(value F64) None
+    @_stream << if value.is_finite ("\(value)".as_bytes | b"null") // TODO: more efficient
+
+  :fun ref primitive_f32(value F32) None
+    @_stream << if value.is_finite ("\(value)".as_bytes | b"null") // TODO: more efficient
+
+  :fun ref primitive_name(value String'box) None
+    @primitive_string(value)
+
+  :fun ref primitive_bytes(value Bytes'box) None
+    @primitive_string(value.clone.as_string) // TODO: more efficient
+
+  :fun ref primitive_string(value String'box) None
+    @_stream.push('"')
+    value.each_char_with_index_and_width -> (char, index, width |
+      case char == (
+      | '"'  | @_stream.push('\\'), @_stream.push('"')
+      | '\\' | @_stream.push('\\'), @_stream.push('\\')
+      | @_stream << "\(char.format.unicode)".as_bytes // TODO: more efficient
+      )
+    )
+    @_stream.push('"')
