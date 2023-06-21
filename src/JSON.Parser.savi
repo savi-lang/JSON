@@ -38,7 +38,7 @@
 
   :fun _peek_softly U8: try (@source.byte_at!(@_offset) | ' ')
 
-  :fun ref _eat!(b U8): if (b != @source.byte_at!(@_offset)) error!, @_advance
+  :fun ref _eat!(b U8): if b != @source.byte_at!(@_offset) error!, @_advance
 
   :fun ref _advance(n USize = 1): @_offset += n
 
@@ -48,7 +48,7 @@
 
   :fun ref _skip_whitespace
     keep_going = True
-    while (keep_going && @_has_next) (
+    while keep_going && @_has_next (
       case @_peek_softly == (
       | ' '  | @_advance
       | '\r' | @_advance
@@ -102,7 +102,7 @@
     yield JSON.Token.ArrayStart
     @_skip_whitespace
 
-    if (@_peek! == ']') (
+    if @_peek! == ']' (
       @_pre_token
       @_advance
     |
@@ -127,7 +127,7 @@
     @_skip_whitespace
     index = 0
 
-    if (@_peek! == ']') (
+    if @_peek! == ']' (
       @_pre_token
       @_advance
     |
@@ -154,7 +154,7 @@
     @_advance // past the opening bracket
     yield JSON.Token.ObjectStart
     @_skip_whitespace
-    if (@_peek! == '}') (
+    if @_peek! == '}' (
       @_pre_token
       @_advance
     |
@@ -184,7 +184,7 @@
     @_eat!('{')
     @_skip_whitespace
 
-    if (@_peek! == '}') (
+    if @_peek! == '}' (
       @_pre_token
       @_advance
     |
@@ -215,7 +215,7 @@
     yield JSON.Token.Number
 
   :fun ref _read_number! (I64 | F64)
-    sign I64 = if (@_peek_softly == '-') (@_advance, -1 | 1)
+    sign I64 = if @_peek_softly == '-' (@_advance, -1 | 1)
 
     integer = @_read_number_digits!
 
@@ -241,7 +241,7 @@
       if exp_negative (exp = exp.negate)
     )
 
-    if (has_dot || has_exp) (
+    if has_dot || has_exp (
       sign.f64 * (integer.f64 + dot) * F64[10].pow(exp.f64)
     |
       sign * integer
@@ -311,7 +311,7 @@
     // We've already read the initial "\u" bytes, so start reading the digits.
     value = @_read_unicode_value!
 
-    if ((value < 0xD800) || (value >= 0xE000)) (
+    if (value < 0xD800) || (value >= 0xE000) (
       // If the value we read is a valid single UTF-16 value, return it now.
       value
     |
@@ -320,7 +320,7 @@
       @_eat!('\\'), @_eat!('u')
       value_2 = @_read_unicode_value!
 
-      if ((value < 0xDC00) && (value_2 >= 0xDC00) && (value_2 < 0xE000)) (
+      if (value < 0xDC00) && (value_2 >= 0xDC00) && (value_2 < 0xE000) (
         // If the two values make a valid pair, return the combined value.
         U32[0x10000]
         + value.bit_and(0x3FF).bit_shl(10)

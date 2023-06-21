@@ -28,7 +28,7 @@
 
     json << "["
     n.times -> (i |
-      if (i > 0) (json << ",")
+      if i > 0 json << ","
       json << obj
     )
     json << "]"

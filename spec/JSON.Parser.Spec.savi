@@ -215,7 +215,7 @@
     try (
       parser.parse!(source) -> (token | collector.collect(parser, token))
       actual = Inspect[collector]
-      if (actual == expected) (
+      if actual == expected (
         True
       |
         @env.err.print("\n")
@@ -240,7 +240,7 @@
       False
     |
       actual = source.trim(0, parser.token_end)
-      if (valid_part == actual) (
+      if valid_part == actual (
         True
       |
         @env.err.write("\nexpected the valid part of ")

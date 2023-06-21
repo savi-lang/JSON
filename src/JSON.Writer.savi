@@ -126,12 +126,12 @@
     )
 
   :fun ref _finish_collection None
-    if (@_should_newline && !@_is_first_in_collection) @_newline_and_indent
+    if @_should_newline && !@_is_first_in_collection @_newline_and_indent
 
   :fun ref _key(name String)
     @primitive_string(name)
     @_stream.push(':')
-    if (@_should_newline || @_indent_spaces.is_nonzero) @_stream.push(' ')
+    if @_should_newline || @_indent_spaces.is_nonzero @_stream.push(' ')
 
   :fun ref object(recurse_id USize) None
     :yields None for None // TODO: add a "without interruption" enforcement to the yield signature to ensure that the yield block isn't allowed to jump away.
@@ -175,7 +175,7 @@
     @_stream << b"null"
 
   :fun ref primitive_bool(value Bool) None
-    @_stream << if value (b"true" | b"false")
+    @_stream << (if value (b"true" | b"false"))
 
   :fun ref primitive_u64(value U64) None
     @_stream << "\(value)".as_bytes // TODO: more efficient
@@ -202,10 +202,10 @@
     @_stream << "\(value)".as_bytes // TODO: more efficient
 
   :fun ref primitive_f64(value F64) None
-    @_stream << if value.is_finite ("\(value)".as_bytes | b"null") // TODO: more efficient
+    @_stream << (if value.is_finite ("\(value)".as_bytes | b"null")) // TODO: more efficient
 
   :fun ref primitive_f32(value F32) None
-    @_stream << if value.is_finite ("\(value)".as_bytes | b"null") // TODO: more efficient
+    @_stream << (if value.is_finite ("\(value)".as_bytes | b"null")) // TODO: more efficient
 
   :fun ref primitive_name(value String'box) None
     @primitive_string(value)
