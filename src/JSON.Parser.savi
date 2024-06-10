@@ -68,6 +68,7 @@
 
   :fun ref _parse_data!
     :yields JSON.Token for None
+    :errors None
     @_skip_whitespace
     @_pre_token
     peeked = @_peek!
